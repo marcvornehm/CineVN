@@ -1,0 +1,25 @@
+-r requirements_core.txt
+boto3
+botocore
+highdicom
+imageio[pyav]<=2.27  # 2.28.0 breaks the integration in moviepy. This PR should fix the issue: https://github.com/Zulko/moviepy/pull/1956
+ipython
+ismrmrd>=1.14
+jsonargparse[signatures]
+jupyter
+matplotlib
+moviepy
+openpyxl
+optuna==3.1
+pandas
+Pillow
+plotly
+pydicom
+pygrappa
+pyMapVBVD
+pytest
+pytorch-lightning==2.0.*
+scikit-image
+sigpy
+tensorboard
+tqdm

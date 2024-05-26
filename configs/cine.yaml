@@ -1,0 +1,69 @@
+data:
+  data_source: ocmr
+  test_split: null
+  batch_size: 1
+  num_workers: 32
+  num_espirit_maps: 1
+model:
+  mode: dynamic
+  num_cascades: 15
+  chans: 16
+  pools: 2
+  conv_size: 3
+  conv_mode: 2d+t
+  pool_temporal: False
+  conv_size_temp: 3
+  pad_mode_temp: circular
+  residual_unet_blocks: True
+  two_convs_per_unet_block: True
+  view_sharing: 0
+  phase_cycling: True
+  fit_reg_landscape: True
+  clamp_dc_weight: False
+  cgdc_interval: 3
+  cgdc_mu: null
+  cgdc_iter: 10
+  cgdc_autograd: True
+  median_temp_size: 1
+  use_sens_net: False
+  gradient_checkpointing: True
+  normalize_for_loss: True
+  lr: 0.005
+  lr_step_size: 50
+  lr_gamma: 0.1
+  weight_decay: 0.0
+  loss_fns:
+    - ssim
+    - perp
+  ssim_mode: 3d
+  compile_model: False
+trainer:
+  use_distributed_sampler: False
+  deterministic: False
+  max_epochs: 150
+  precision: 16-mixed
+  devices: -1
+transform:
+  mask_type: gro
+  center_fractions:
+    - 0
+  accelerations:
+    - 6
+    - 7
+    - 8
+    - 9
+    - 10
+  random_flips: True
+  roll_temporal: False
+  augment_phase: False
+  augment_mask: False
+  augment_tres: False
+  field_strength: null
+callback:
+  acc_target_epoch: null
+  patience: 30
+  val_log_images: 16
+  val_log_interval: 10
+  save_img: False
+seed_everything: 42
+float32_matmul_precision: highest

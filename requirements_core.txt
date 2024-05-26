@@ -1,0 +1,9 @@
+cupy-cuda11x  # change to appropriate version if necessary
+h5py
+numpy<1.25
+PyYAML
+scipy
+--extra-index-url https://download.pytorch.org/whl/cu118
+torch==2.0.*
+torchmetrics
+torchvision

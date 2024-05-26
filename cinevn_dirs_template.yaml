@@ -1,0 +1,4 @@
+data_path: path/to/<target_dir>
+coilsens_path: path/to/<coil_sens_dir>
+log_path: path/to/<log_dir>
+cache_path: path/to/<cache_dir>
