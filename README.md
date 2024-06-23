@@ -7,6 +7,10 @@ The source code is originally based on the [fastMRI repository](https://github.c
 
 ![CineVN network architecture](fig/architecture.png)
 
+We offer two options for running the provided code:
+- Training and testing networks by retrospectively undersampling fully-sampled data from the OCMR dataset. This requires following the [setup](#setup), [data preprocessing](#data-preprocessing), [training](#training), [testing](#testing), and [evaluation](#evaluation) instructions.
+- Reconstruction of (prospectively undersampled) data in the MRD format. This requires following the [setup](#setup) and [inference](#inference) instructions.
+
 ## Setup
 1. Setup a python environment based on Python 3.10.
 2. Install requirements using `pip install -r requirements.txt`. Adjust the CUDA version in`requirements_core.txt` according to your system, if necessary.
@@ -30,7 +34,7 @@ To preprocess the data, run the following command with parameters in `< >` repla
 
 `python preprocess.py ocmr <raw_dir> <target_dir> <coil_sens_dir> --cs_dir <cs_dir> --csv_query smp=='fs' --accelerations <acceleration_rates> --mask_types gro`
 
-**Explanation of options:**
+**Explanation of arguments:**
 * `ocmr`: This is required and specifies that the OCMR dataset should be processed
 * `<raw_dir>`: The unprocessed OCMR datasets will be downloaded and saved in `<raw_dir>/ocmr`. You can avoid downloading the datasets during preprocessing if you download the OCMR dataset manually and save the h5 files in this directory.
 * `<target_dir>`: The processed datasets will be saved below this directory, specifically in the following folders:
@@ -55,7 +59,7 @@ Run the following command for training:
 
 `python run_CineVN.py fit -c configs/cine.yaml --name <experiment_name> --transform.accelerations <acceleration_rates> --data.num_workers <num_workers>`
 
-**Explanation of options:**
+**Explanation of arguments:**
 * `-c configs/cine.yaml`: Specifies the config file, which defines most parameters.
 * `--name <experiment_name>`: An identifier for the trained network. This name will be used to create a subdirectory in your `log_path`.
 * `--transform.accelerations <acceleration_rates>`: Defines the acceleration rate(s) for which the network should be trained. Fully sampled training data is retrospectively undersampled during training using this acceleration rate. Multiple acceleration rates can be specified, for example, as `--transform.accelerations 6 7 8 9 10`.
@@ -69,7 +73,7 @@ Run the following command for testing:
 
 `python run_CineVN.py test -c configs/cine.yaml --name <experiment_name> --data.test_split <masktype>_<acceleration>`
 
-**Explanation of options:**
+**Explanation of arguments:**
 * `-c configs/cine.yaml`: Specifies the config file, which defines most parameters.
 * `--name <experiment_name>`: Should be the same as during training.
 * `--data.test_split <masktype>_<acceleration>`: Specifies the name of the test set. This is composed of the mask type and the acceleration rate (e.g. `gro_08`). See your `<target_dir>` specified during preprocessing for the names of the available test sets. Note that the names of the directories containing your test sets will start with `ocmr_test_`, but this should be omitted in this command line argument.
@@ -89,17 +93,26 @@ This script will:
 * save error images for each reconstruction (note that pixel values are scaled by a factor of 20 in the error images)
 * compute image quality metrics for each reconstruction
 
-**Explanation of options:**
+All outputs will be saved in a folder `<logs_dir>/<experiment_name>/evaluations/<test_set>`.
+
+**Explanation of arguments:**
 * `<experiment_name>`: Should be the same as during training and testing.
 * `<test_set>`: Name of the test set that was reconstructed. Should be in the form `ocmr_test_<masktype>_<acceleration>`. See the `reconstructions` folder in your experiment's log directory for the correct name.
 * `<logs_dir>`. Path to your `log_path`. Note that this is not automatically read from your `cinevn_dirs.yaml` file.
 * `--gt_dir <gt_dir>`: Path to the preprocessed data. Should be the directory that contains the `ocmr_test...` subdirectories, i.e., `<target_dir>/dynamic`. The fully-sampled reference reconstructions will be read from this location. Omit this option to skip computing quantitative image metrics.
 * `--cs_dir <cs_dir>`: Path to the compressed sensing reconstructions. Should be the directory that contains the `ocmr...` subdirectories, i.e.,`<cs_dir>/dynamic`. Omit this option to skip comparison with compressed sensing.
 
-The outputs will be saved in a folder `<logs_dir>/<experiment_name>/evaluations/<test_set>`.
+## Inference
+Use the following command to reconstruct undersampled Cartesian cardiac cine data in the MRD format, for example cines from the OCMR dataset starting with `us...`. Reconstructions will be saved as gif files in the current working directory.
+
+`python inference_mrd.py <mrd_dataset> <model>`
+
+**Explanation of arguments:**
+- `<mrd_dataset>`: Path to the MRD dataset as h5 file.
+- `<model>`: Path to the model to use for reconstruction. This can be one of the [pretrained models](#pretrained-models) described below or a model trained using the instructions above.
 
 ## Pretrained models
-Checkpoints for pretrained models with the GRO sampling pattern and acceleration rates R={8,12,16,20} will be published at a later point. In the meantime, they are provided upon request to marc.vornehm@fau.de.
+Checkpoints for pretrained models with the GRO sampling pattern and acceleration rates R={8,12,16,20} are included in the [models](models) subdirectory of this repository.
 
 [^1]: https://www.ocmr.info/
 [^2]: https://mrirecon.github.io/bart/
