@@ -51,6 +51,8 @@ def conjgrad_iterations(x0: torch.Tensor, csm: torch.Tensor, mask: torch.Tensor,
     for _ in range(max_iters):
         Ap = EhE_Op(p, csm, mask, mu, fft_ndim)
         pAp = zdot_reduce_sum(p, Ap)
+        if pAp < eps:
+            break
         alpha = (rsold / pAp)
         x = x + alpha * p
         r = r - alpha * Ap
