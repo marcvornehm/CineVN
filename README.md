@@ -1,5 +1,10 @@
 # CineVN
 
+## Publication
+Please cite the [original publication](https://onlinelibrary.wiley.com/doi/full/10.1002/mrm.30260) as follows:
+
+> Vornehm M, Wetzl J, Giese D, et al. CineVN: Variational network reconstruction for rapid functional cardiac cine MRI. *Magn Reson Med.* 2024. doi:10.1002/mrm.30260
+
 ## Overview
 CineVN is a Variational Network-based method for reconstructing highly undersampled cardiac cine MRI.
 It is trained and evaluted using the publicly available [OCMR dataset](https://www.ocmr.info/).
