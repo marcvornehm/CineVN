@@ -3,24 +3,25 @@ Copyright (c) Marc Vornehm <marc.vornehm@fau.de>.
 """
 
 import argparse
-import os
 import warnings
-from typing import Callable, Iterable, Sequence
+from typing import Callable, Sequence
 
 import optuna
 from optuna.trial import TrialState
 
-from cinevn.pl import cli
+from cinevn_pl import cli
 
 
 def run_cli():
     # ignore `srun` warning from pytorch lightning
-    warnings.filterwarnings('ignore', message='The `srun` command is available on your system but is not used.*',
-                            module='lightning_fabric.plugins.environments.slurm')
+    warnings.filterwarnings(
+        'ignore', message='The `srun` command is available on your system but is not used.*',
+        module='lightning_fabric.plugins.environments.slurm',
+    )
 
     # base argument parser
     parser = argparse.ArgumentParser(add_help=False)
-    cli.add_main_arguments(parser)
+    cli.CineVNCLI.add_main_arguments(parser)
 
     args = parser.parse_known_args()[0]
     if args.optuna is None:
@@ -28,23 +29,27 @@ def run_cli():
         _ = cli.CineVNCLI()
     else:
         # hyperparameter tuning
-        optimize_hyperparameters(
-            objective, 'maximize', n_trials=args.optuna if args.optuna > 0 else None, study_name=args.name
-        )
+        n_trials = args.optuna if args.optuna > 0 else None
+        optimize_hyperparameters(objective, 'maximize', n_trials=n_trials, study_name=args.name)
 
 
-def optimize_hyperparameters(objective: Callable, direction: str = 'minimize', n_trials: int | None = None,
-                             study_name: str = 'dummy'):
+def optimize_hyperparameters(
+        objective: Callable,
+        direction: str = 'minimize',
+        n_trials: int | None = None,
+        study_name: str = 'dummy',
+):
+    pruner = MultiplePruners(
+        pruners=[
+            optuna.pruners.MedianPruner(n_warmup_steps=15),
+            optuna.pruners.ThresholdPruner(lower=0.9, n_warmup_steps=30),
+        ],
+        pruning_fun=any,
+    )
     study = optuna.create_study(
-        storage=os.path.expandvars('sqlite:///optuna.db'),
+        storage='sqlite:///optuna.db',
         direction=direction,
-        pruner=MultiplePruners(
-            pruners=[
-                optuna.pruners.MedianPruner(n_warmup_steps=15),
-                optuna.pruners.ThresholdPruner(lower=0.9, n_warmup_steps=30),
-            ],
-            pruning_fun=any,
-        ),
+        pruner=pruner,
         study_name=study_name,
         load_if_exists=True,
     )
@@ -93,19 +98,11 @@ class MultiplePruners(optuna.pruners.BasePruner):
     https://github.com/optuna/optuna/issues/2042
     """
 
-    def __init__(
-        self,
-        pruners: Sequence[optuna.pruners.BasePruner],
-        pruning_fun: Callable[[Iterable[bool]], bool] = any,
-    ) -> None:
+    def __init__(self, pruners: Sequence[optuna.pruners.BasePruner], pruning_fun: Callable = any) -> None:
         self.pruners = pruners
         self.pruning_fun = pruning_fun
 
-    def prune(
-        self,
-        study: optuna.study.Study,
-        trial: optuna.trial.FrozenTrial,
-    ) -> bool:
+    def prune(self, study: optuna.study.Study, trial: optuna.trial.FrozenTrial) -> bool:
         return self.pruning_fun(pruner.prune(study, trial) for pruner in self.pruners)
 
 

@@ -4,7 +4,10 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "CineVN"
-version = "0.0.1"
-
-[options]
-packages = ["bart", "cinevn", "helpers", "sampling-patterns"]
+version = "0.1.0"
+authors = [
+    { name = "Marc Vornehm", email = "marc.vornehm@fau.de" }
+]
+description = "CineVN: Variational network reconstruction for rapid functional cardiac cine MRI"
+readme = "README.md"
+requires-python = ">=3.10"

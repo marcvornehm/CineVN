@@ -5,7 +5,6 @@ data:
   num_workers: 32
   num_espirit_maps: 1
 model:
-  mode: dynamic
   num_cascades: 15
   chans: 16
   pools: 2
@@ -24,8 +23,6 @@ model:
   cgdc_mu: null
   cgdc_iter: 10
   cgdc_autograd: True
-  median_temp_size: 1
-  use_sens_net: False
   gradient_checkpointing: True
   normalize_for_loss: True
   lr: 0.005
@@ -45,8 +42,6 @@ trainer:
   devices: -1
 transform:
   mask_type: gro
-  center_fractions:
-    - 0
   accelerations:
     - 6
     - 7
@@ -64,6 +59,6 @@ callback:
   patience: 30
   val_log_images: 16
   val_log_interval: 10
-  save_img: False
+  save_gif: False
 seed_everything: 42
 float32_matmul_precision: highest

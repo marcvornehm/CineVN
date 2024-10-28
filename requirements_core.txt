@@ -1,9 +1,9 @@
-cupy-cuda11x  # change to appropriate version if necessary
-h5py
-numpy<1.25
-PyYAML
-scipy
 --extra-index-url https://download.pytorch.org/whl/cu118
-torch==2.0.*
+h5py
+ismrmrd
+numpy<2.0.0
+scipy
+setuptools
+torch==2.0.*  # pin to 2.0 because of breaking change described here: https://github.com/Lightning-AI/pytorch-lightning/issues/18803
 torchmetrics
-torchvision
+torchvision==0.15.*  # this is the version corresponding to pytorch 2.0

@@ -2,14 +2,9 @@ __pycache__/
 .venv/
 .vscode/
 .idea/
-*.png
-!fig/*.png
-*.cfl
-*.hdr
 evaluations/
 logs/
 dataset_cache.pkl
-*.pt
 cinevn_dirs.yaml
 optuna.db
 .ipynb_checkpoints/
