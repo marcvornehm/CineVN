@@ -39,7 +39,7 @@ Training and testing on the OCMR dataset[^1] requires preprocessing of the data.
 
 To preprocess the data, run the following command with parameters in `< >` replaced according to your needs:
 
-`python preprocess.py ocmr <raw_dir> <target_dir> <coil_sens_dir> --cs_dir <cs_dir> --csv_query smp=='fs' --accelerations <acceleration_rates> --mask_types gro`
+`python run_preprocessing.py ocmr <raw_dir> <target_dir> <coil_sens_dir> --cs_dir <cs_dir> --csv_query smp=='fs' --accelerations <acceleration_rates> --mask_types gro`
 
 **Explanation of parameters:**
 * `ocmr`: This is required and specifies that the OCMR dataset should be processed.
@@ -122,3 +122,10 @@ Use the following command to reconstruct undersampled Cartesian cardiac cine dat
 
 ## Pretrained models
 Checkpoints for pretrained models with the GRO sampling pattern and acceleration rates R={8,12,16,20} are included in the [models](models) directory of this repository.
+
+---
+
+[^1]: https://www.ocmr.info/
+[^2]: https://mrirecon.github.io/bart/
+[^3]: https://github.com/OSU-CMR/cmr-sampling
+[^4]: https://arxiv.org/abs/2206.03630
